@@ -1,0 +1,99 @@
+[package]
+name = "esp32c3-client"
+version = "0.0.1"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+[workspace]
+members = [
+    "esp-wifi",
+    "esp-wifi-sys",
+    "examples-util",
+]
+resolver = "2"
+
+[profile.release]
+# Explicitly disable LTO which the Xtensa codegen backend has issues
+lto = "off"
+opt-level = 3
+
+[profile.dev]
+# Explicitly disable LTO which the Xtensa codegen backend has issues
+lto = "off"
+
+[workspace.dependencies]
+embedded-hal = "0.2.3"
+esp-hal-common = { version = "0.10.0" }
+esp32c3-hal = { version = "0.10.0" }
+esp32-hal = { version = "0.13.0", features = [ "rt" ] }
+esp32c3 = { version = "0.15.0",  features = ["critical-section"] }
+
+embassy-futures = { version = "0.1.0" }
+bleps = { git = "https://github.com/bjoernQ/bleps", package = "bleps", rev = "b82f1e7009bef7e32f0918be5b186188aa5e7109", features = ["macros"] }
+embassy-executor = { version = "0.2.0", package = "embassy-executor", features = ["nightly", "executor-thread", "integrated-timers"] }
+embassy-net = { version = "0.1.0", features = ["nightly", "tcp", "udp", "dhcpv4", "medium-ethernet"] }
+embassy-time = { version = "0.1.1", features = ["nightly"] }
+embedded-hal-async = { version = "0.2.0-alpha.1" }
+embedded-io = "0.4.0"
+embedded-svc = { version = "0.25.1", default-features = false, features = [] }
+esp-backtrace = { version = "0.7.0", features = ["panic-handler", "exception-handler", "print-uart"] }
+esp-println = { version = "0.5.0", features = ["log"] }
+
+enumset = { version = "1", default-features = false }
+
+critical-section = "1.1.1"
+atomic-polyfill = "1.0.2"
+futures-util = { version = "0.3.28", default-features = false }
+heapless = { version = "0.7.16", default-features = false }
+log = "0.4.18"
+smoltcp = { version = "0.10.0", default-features=false, features = ["proto-igmp", "proto-ipv4", "proto-dns", "socket-tcp", "socket-icmp", "socket-udp", "socket-dns", "medium-ethernet", "proto-dhcpv4", "socket-raw", "socket-dhcpv4"] }
+embassy-net-driver = { version = "0.1.0" }
+embassy-sync = { version = "0.2.0" }
+fugit = "0.3.7"
+linked_list_allocator = { version = "0.10.5", default-features = false, features = ["const_mut_refs"] }
+num-derive = { version = "0.3", features = ["full-syntax"] }
+num-traits = { version = "0.2", default-features = false }
+
+
+[dependencies]
+embedded-svc.workspace = true
+bleps.workspace = true
+embassy-executor.workspace = true
+embassy-time.workspace = true
+embassy-futures.workspace = true
+futures-util.workspace = true
+embedded-io.workspace = true
+smoltcp.workspace = true
+log.workspace = true
+heapless.workspace = true
+embassy-net = { workspace = true, optional = true }
+esp32c3-hal.workspace = true
+examples-util = { path = "./examples-util", features = ["esp32c3"] }
+esp-println = { workspace = true, features = [ "esp32c3" ] }
+esp-backtrace = { workspace = true, features = ["esp32c3"] }
+esp-wifi = { path = "./esp-wifi", features = ["esp32c3"] }
+embedded-hal-async = { workspace = true, optional = true }
+
+[features]
+default = ["esp32c3"]
+esp32c3 = ["embassy-executor/arch-riscv32"]
+async = ["esp-wifi/async", "bleps/async", "dep:embedded-hal-async", "esp32c3-hal/async", "esp32c3-hal/embassy-time-timg0"]
+embassy-net = ["esp-wifi/embassy-net","dep:embassy-net"]
+wifi-logs = ["esp-wifi/wifi-logs"]
+dump-packets = ["esp-wifi/dump-packets"]
+utils = ["esp-wifi/utils"]
+enumset = ["esp-wifi/enumset"]
+# required for wifi feature
+embedded-svc = [ "esp-wifi/embedded-svc" ]
+wifi = ["esp-wifi/wifi", "embedded-svc"]
+ble = ["esp-wifi/ble"]
+phy-enable-usb = ["esp-wifi/phy-enable-usb"]
+ps-min-modem = ["esp-wifi/ps-min-modem"]
+esp-now = ["esp-wifi/esp-now"]
+ipv6 = ["esp-wifi/ipv6"]
+coex = ["esp-wifi/coex"]
+
+[[bin]]
+name="esp32c3-client"
+test=false
+bench=false

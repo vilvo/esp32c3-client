@@ -1,0 +1,10 @@
+[package]
+name = "examples-util"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+esp32c3-hal = { workspace = true, optional = true }
+
+[features]
+esp32c3 = [ "esp32c3-hal" ]

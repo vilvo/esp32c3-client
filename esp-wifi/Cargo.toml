@@ -1,0 +1,65 @@
+[package]
+name = "esp-wifi"
+version = "0.1.0"
+edition = "2021"
+license = "MIT OR Apache-2.0"
+
+[dependencies]
+embedded-hal.workspace = true
+esp32c3-hal = { workspace = true, optional = true }
+esp32-hal = { workspace = true, optional = true }
+esp32c3 = { workspace = true, optional = true }
+smoltcp = { workspace = true, optional = true }
+esp-hal-common = { workspace = true, optional = true }
+critical-section.workspace = true
+atomic-polyfill.workspace = true
+log.workspace = true
+embedded-svc = { workspace = true, optional = true }
+enumset = { workspace = true, optional = true }
+linked_list_allocator = { workspace = true }
+embedded-io.workspace = true
+fugit.workspace = true
+heapless = { workspace = true, default-features = false }
+num-derive = { workspace = true, features = ["full-syntax"] }
+num-traits = { workspace = true, default-features = false }
+esp-wifi-sys = { version = "0.1.0", path = "../esp-wifi-sys" }
+embassy-sync = { workspace = true, optional = true }
+embassy-futures = { workspace = true, optional = true }
+embassy-net-driver = { workspace = true, optional = true }
+
+[features]
+default = [ "utils", "mtu-1492" ]
+
+# chip features
+esp32c3 = [ "esp32c3-hal", "dep:esp32c3", "esp-wifi-sys/esp32c3", "esp-hal-common/esp32c3" ]
+esp32 = [ "esp32-hal",  "esp-wifi-sys/esp32", "esp-hal-common/esp32" ]
+
+# async features
+async = [
+  "dep:embassy-sync",
+  "dep:embassy-futures",
+  "embedded-io/async",
+  "esp32c3-hal?/embassy",
+  "esp32-hal?/embassy",
+]
+
+embassy-net = ["dep:embassy-net-driver", "async"]
+
+# misc features
+coex = []
+wifi-logs = []
+dump-packets = []
+utils = [ "dep:smoltcp" ]
+enumset = []
+embedded-svc = [ "dep:enumset", "dep:embedded-svc", "utils" ]
+wifi = [ "embedded-svc" ]
+ble = [ "esp32-hal?/bluetooth" ]
+phy-enable-usb = []
+ps-min-modem = []
+esp-now = [ "wifi" ]
+big-heap = []
+mtu-1514 = []
+mtu-1500 = []
+mtu-1492 = []
+mtu-746 = []
+ipv6 = ["smoltcp?/proto-ipv6"]
